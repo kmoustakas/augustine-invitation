@@ -1,14 +1,15 @@
-# augustine-invitation<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Secret Invitation</title>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
 <style>
   body {
-    background: #1e1e2f;
-    color: #f0f0f0;
-    font-family: 'Cursive', serif;
+    background: #f5ecd9; /* soft vintage parchment */
+    color: #3e2e1f; /* dark brown text for vintage feel */
+    font-family: 'Great Vibes', cursive;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -16,26 +17,50 @@
     min-height: 100vh;
     padding: 20px;
   }
-  #diary-container {
-    position: relative;
-    max-width: 650px;
+
+  /* Password Screen */
+  #password-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 50vh;
   }
+  #password-screen input[type="password"] {
+    padding: 10px;
+    font-size: 1em;
+    border-radius: 5px;
+    border: 1px solid #a78b5a;
+    margin-bottom: 10px;
+  }
+  #password-screen button {
+    padding: 10px 20px;
+    font-size: 1em;
+    border: none;
+    border-radius: 5px;
+    background: #a78b5a;
+    color: #f5ecd9;
+    cursor: pointer;
+  }
+
+  /* Diary Container */
+  #diary-container { position: relative; max-width: 650px; display: none; }
   #diary-text {
-    font-size: 1.3em;
+    font-size: 2em;
     line-height: 1.6;
     white-space: pre-wrap;
-    min-height: 200px;
+    min-height: 300px;
   }
   .letter {
     opacity: 0;
     display: inline-block;
-    transition: opacity 0.5s ease;
+    transition: opacity 0.8s ease;
   }
   #quill {
     position: absolute;
-    width: 10px;
-    height: 20px;
-    background: linear-gradient(to top, #ffb347, #ffd700);
+    width: 12px;
+    height: 25px;
+    background: linear-gradient(to top, #cfa04d, #ffd700);
     top: 0;
     left: 0;
     animation: blink 1s infinite;
@@ -45,62 +70,42 @@
     0%, 50%, 100% {opacity: 1;}
     25%, 75% {opacity: 0;}
   }
-  #riddle-section {
-    display: none;
-    margin-top: 20px;
-    text-align: center;
-  }
+
+  /* Riddle Section */
+  #riddle-section { display: none; margin-top: 20px; text-align: center; }
   input[type="text"] {
     padding: 10px;
     font-size: 1em;
     border-radius: 5px;
-    border: none;
+    border: 1px solid #a78b5a;
     margin-right: 10px;
   }
-  button {
-    padding: 10px 15px;
-    font-size: 1em;
-    border: none;
-    border-radius: 5px;
-    background: #ffb347;
-    color: #1e1e2f;
-    cursor: pointer;
-  }
-  #rsvp-info {
-    display: none;
-    margin-top: 20px;
-    font-size: 1.2em;
-    color: #ffd700;
-    animation: fadeIn 1.5s forwards;
-  }
-  @keyframes fadeIn {
-    from {opacity: 0;}
-    to {opacity: 1;}
-  }
-  #rsvp-form {
-    margin-top: 15px;
-    text-align: center;
-  }
-  #rsvp-form input[type="text"] {
-    margin-bottom: 10px;
-    display: block;
-    width: 200px;
-  }
-  #rsvp-form select {
-    padding: 8px;
-    font-size: 1em;
-    border-radius: 5px;
-    border: none;
-  }
+  button { padding: 10px 20px; font-size: 1em; border: none; border-radius: 5px; background: #a78b5a; color: #f5ecd9; cursor: pointer; }
+
+  /* RSVP Section */
+  #rsvp-info { display: none; margin-top: 20px; font-size: 1.5em; color: #8b5e3c; animation: fadeIn 1.5s forwards; }
+  @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+  #rsvp-form { margin-top: 15px; text-align: center; }
+  #rsvp-form input[type="text"] { margin-bottom: 10px; display: block; width: 220px; }
+  #rsvp-form select { padding: 8px; font-size: 1em; border-radius: 5px; border: 1px solid #a78b5a; }
 </style>
 </head>
 <body>
 
+<!-- Password screen -->
+<div id="password-screen">
+  <h2>Enter the Secret Password to Reveal the Invitation</h2>
+  <input type="password" id="site-password" placeholder="Enter password">
+  <button onclick="checkSitePassword()">Enter</button>
+</div>
+
+<!-- Diary and Quill -->
 <div id="diary-container">
   <div id="diary-text"></div>
   <div id="quill"></div>
 </div>
 
+<!-- Riddle Section -->
 <div id="riddle-section">
   <p><em>To unlock the RSVP, solve this riddle:</em></p>
   <p>
@@ -113,6 +118,7 @@
   <button onclick="checkAnswer()">Submit</button>
 </div>
 
+<!-- RSVP Section -->
 <div id="rsvp-info">
   <p>🎉 The secret gathering awaits you! Please reply below:</p>
   <div id="rsvp-form">
@@ -128,6 +134,20 @@
 </div>
 
 <script>
+const correctSitePassword = "magic2025"; // Set your password here
+
+function checkSitePassword() {
+  const input = document.getElementById("site-password").value.trim();
+  if(input === correctSitePassword) {
+    document.getElementById("password-screen").style.display = "none";
+    document.getElementById("diary-container").style.display = "block";
+    typeWriter();
+  } else {
+    alert("Incorrect password. Try again!");
+  }
+}
+
+// Diary text
 const diaryTextContent = `
 Along the boulevard, the night feels sweet,
 A milestone calls for a secret meet.
@@ -158,7 +178,7 @@ A single word will grant your part.
 const diaryText = document.getElementById("diary-text");
 const quill = document.getElementById("quill");
 let index = 0;
-let speed = 40;
+let speed = 80; // slower typing
 
 function updateQuillPosition() {
   const letters = diaryText.querySelectorAll(".letter");
@@ -185,13 +205,14 @@ function typeWriter() {
     setTimeout(typeWriter, speed);
   } else {
     document.getElementById("riddle-section").style.display = "block";
-    quill.style.display = "none"; // hide quill after typing
+    quill.style.display = "none";
   }
 }
 
+// Riddle check
 function checkAnswer() {
   const answer = document.getElementById("riddle-answer").value.toLowerCase().trim();
-  if(answer === "arena") { // set your riddle answer here
+  if(answer === "arena") {
     document.getElementById("rsvp-info").style.display = "block";
     document.getElementById("riddle-section").style.display = "none";
   } else {
@@ -199,6 +220,7 @@ function checkAnswer() {
   }
 }
 
+// RSVP
 function submitRSVP() {
   const name = document.getElementById("rsvp-name").value;
   const choice = document.getElementById("rsvp-choice").value;
@@ -208,8 +230,6 @@ function submitRSVP() {
     alert("Please fill out both your name and attendance choice.");
   }
 }
-
-typeWriter();
 </script>
 
 </body>
