@@ -1,0 +1,216 @@
+# augustine-invitation<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Secret Invitation</title>
+<style>
+  body {
+    background: #1e1e2f;
+    color: #f0f0f0;
+    font-family: 'Cursive', serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    padding: 20px;
+  }
+  #diary-container {
+    position: relative;
+    max-width: 650px;
+  }
+  #diary-text {
+    font-size: 1.3em;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    min-height: 200px;
+  }
+  .letter {
+    opacity: 0;
+    display: inline-block;
+    transition: opacity 0.5s ease;
+  }
+  #quill {
+    position: absolute;
+    width: 10px;
+    height: 20px;
+    background: linear-gradient(to top, #ffb347, #ffd700);
+    top: 0;
+    left: 0;
+    animation: blink 1s infinite;
+    pointer-events: none;
+  }
+  @keyframes blink {
+    0%, 50%, 100% {opacity: 1;}
+    25%, 75% {opacity: 0;}
+  }
+  #riddle-section {
+    display: none;
+    margin-top: 20px;
+    text-align: center;
+  }
+  input[type="text"] {
+    padding: 10px;
+    font-size: 1em;
+    border-radius: 5px;
+    border: none;
+    margin-right: 10px;
+  }
+  button {
+    padding: 10px 15px;
+    font-size: 1em;
+    border: none;
+    border-radius: 5px;
+    background: #ffb347;
+    color: #1e1e2f;
+    cursor: pointer;
+  }
+  #rsvp-info {
+    display: none;
+    margin-top: 20px;
+    font-size: 1.2em;
+    color: #ffd700;
+    animation: fadeIn 1.5s forwards;
+  }
+  @keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+  }
+  #rsvp-form {
+    margin-top: 15px;
+    text-align: center;
+  }
+  #rsvp-form input[type="text"] {
+    margin-bottom: 10px;
+    display: block;
+    width: 200px;
+  }
+  #rsvp-form select {
+    padding: 8px;
+    font-size: 1em;
+    border-radius: 5px;
+    border: none;
+  }
+</style>
+</head>
+<body>
+
+<div id="diary-container">
+  <div id="diary-text"></div>
+  <div id="quill"></div>
+</div>
+
+<div id="riddle-section">
+  <p><em>To unlock the RSVP, solve this riddle:</em></p>
+  <p>
+    I share my name with a place once loud,<br>
+    Where fans cheered in a roaring crowd.<br>
+    But swap one letter, just to play,<br>
+    And you'll find me - my name is _______?
+  </p>
+  <input type="text" id="riddle-answer" placeholder="Your answer here">
+  <button onclick="checkAnswer()">Submit</button>
+</div>
+
+<div id="rsvp-info">
+  <p>🎉 The secret gathering awaits you! Please reply below:</p>
+  <div id="rsvp-form">
+    <input type="text" id="rsvp-name" placeholder="Name(s)">
+    <select id="rsvp-choice">
+      <option value="">Will you attend?</option>
+      <option value="attending">Attending</option>
+      <option value="decline">Regretfully Decline</option>
+    </select>
+    <br>
+    <button onclick="submitRSVP()">Submit RSVP</button>
+  </div>
+</div>
+
+<script>
+const diaryTextContent = `
+Along the boulevard, the night feels sweet,
+A milestone calls for a secret meet.
+Forty years young, a toast takes flight,
+With kindred spirits hidden from sight.
+
+Behind Augustine’s doors, where time rewinds,
+You’ll find 1946—if you read the signs.
+The cellar whispers, the glasses cheer,
+Come sip and laugh with friends held near.
+
+On the fifteenth night of November’s reign,
+At seven o’clock, remember the name.
+A cozy meal, with laughter near,
+Good friends, good wine, and heartfelt cheer.
+
+Dress the part, keep secrets tight,
+And join the revelry deep in the night.
+Reply in kind, a word or two,
+So the table is set and waiting for you.
+
+Whisper it low, let no one hear—
+The password spoken will make things clear.
+But entry comes by riddle’s art,
+A single word will grant your part.
+`;
+
+const diaryText = document.getElementById("diary-text");
+const quill = document.getElementById("quill");
+let index = 0;
+let speed = 40;
+
+function updateQuillPosition() {
+  const letters = diaryText.querySelectorAll(".letter");
+  if(letters.length > 0) {
+    const lastLetter = letters[letters.length - 1];
+    const rect = lastLetter.getBoundingClientRect();
+    const containerRect = diaryText.parentElement.getBoundingClientRect();
+    quill.style.left = (rect.right - containerRect.left) + "px";
+    quill.style.top = (rect.top - containerRect.top) + "px";
+  }
+}
+
+function typeWriter() {
+  if(index < diaryTextContent.length) {
+    const span = document.createElement('span');
+    span.className = 'letter';
+    span.textContent = diaryTextContent.charAt(index);
+    diaryText.appendChild(span);
+    setTimeout(() => {
+      span.style.opacity = 1;
+      updateQuillPosition();
+    }, 50);
+    index++;
+    setTimeout(typeWriter, speed);
+  } else {
+    document.getElementById("riddle-section").style.display = "block";
+    quill.style.display = "none"; // hide quill after typing
+  }
+}
+
+function checkAnswer() {
+  const answer = document.getElementById("riddle-answer").value.toLowerCase().trim();
+  if(answer === "arena") { // set your riddle answer here
+    document.getElementById("rsvp-info").style.display = "block";
+    document.getElementById("riddle-section").style.display = "none";
+  } else {
+    alert("Hmm… that’s not quite right. Try again!");
+  }
+}
+
+function submitRSVP() {
+  const name = document.getElementById("rsvp-name").value;
+  const choice = document.getElementById("rsvp-choice").value;
+  if(name && choice) {
+    alert(`Thank you, ${name}! Your response has been recorded as "${choice}".`);
+  } else {
+    alert("Please fill out both your name and attendance choice.");
+  }
+}
+
+typeWriter();
+</script>
+
+</body>
+</html>
